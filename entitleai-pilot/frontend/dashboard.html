@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - EntitleAI-Pilot | Performance Analytics</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <style>
+        /* YOUR EXISTING CSS REMAINS EXACTLY THE SAME */
+        :root {
+            --primary: #000000;
+            --primary-dark: #333333;
+            --secondary: #666666;
+            --accent: #0077ff;
+            --accent-light: #3399ff;
+            --success: #00cc66;
+            --danger: #ff4444;
+            --warning: #ffaa00;
+            --light: #ffffff;
+            --light-gray: #f8f9fa;
+            --gray: #e0e0e0;
+            --medium-gray: #cccccc;
+            --dark-gray: #666666;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light);
+            color: var(--primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        /* ================= FIXED NAVBAR ================= */
+        .navbar-white {
+            background-color: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: var(--transition);
+            padding: 0;
+        }
+
+        .navbar-white.scrolled {
+            box-shadow: var(--shadow);
+        }
+
+        .nav-wrapper {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.4rem;
+        }
+
+        .logo img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50px;
+            object-fit: cover;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--accent);
+            background: rgba(0, 119, 255, 0.1);
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .logo-highlight {
+            color: var(--accent);
+        }
+
+        .badge {
+            background: var(--accent);
+            color: var(--light);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        #menu {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--dark-gray);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 10px 15px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            border-radius: 8px;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background: rgba(0, 119, 255, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* Mobile Menu Icon */
+        .menuIcon {
+            display: none;
+            width: 30px;
+            height: 24px;
+            position: relative;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .menuIcon .icon {
+            display: block;
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            opacity: 1;
+            left: 0;
+            transform: rotate(0deg);
+            transition: 0.25s ease-in-out;
+        }
+
+        .menuIcon .icon:nth-child(1) { top: 0px; }
+        .menuIcon .icon:nth-child(2) { top: 10px; }
+        .menuIcon .icon:nth-child(3) { top: 20px; }
+
+        .menuIcon.toggle .icon:nth-child(1) {
+            top: 10px;
+            transform: rotate(135deg);
+        }
+
+        .menuIcon.toggle .icon:nth-child(2) {
+            opacity: 0;
+            left: -30px;
+        }
+
+        .menuIcon.toggle .icon:nth-child(3) {
+            top: 10px;
+            transform: rotate(-135deg);
+        }
+
+        /* Overlay Menu */
+        .overlay-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+
+        .overlay-menu.show {
+            transform: translateX(0);
+        }
+
+        .overlay-menu ul {
+            list-style: none;
+            text-align: center;
+            padding: 0;
+        }
+
+        .overlay-menu li {
+            margin: 20px 0;
+        }
+
+        .overlay-menu a {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 12px 30px;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+
+        .overlay-menu a:hover {
+            color: var(--accent);
+            background: rgba(0, 119, 255, 0.05);
+        }
+
+        /* ================= MAIN CONTENT ================= */
+        .main-content {
+            max-width: 1300px;
+            margin: 150px auto 50px;
+            padding: 0 30px;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .dashboard-header h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dashboard-header h2 i {
+            color: var(--accent);
+            background: rgba(0, 119, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 1.8rem;
+        }
+
+        .dashboard-header p {
+            color: var(--dark-gray);
+            font-size: 1rem;
+            margin-top: 8px;
+            padding-left: 60px;
+        }
+
+        /* NEW: Export Buttons */
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            margin-left: 60px;
+            flex-wrap: wrap;
+        }
+
+        .btn-export {
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            background: var(--light);
+            border: 1px solid var(--gray);
+            color: var(--primary);
+        }
+
+        .btn-export:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .btn-export i {
+            color: var(--accent);
+        }
+
+        .btn-export:hover i {
+            color: white;
+        }
+
+        /* NEW: Date Range Picker */
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            margin-left: 60px;
+            flex-wrap: wrap;
+        }
+
+        .date-input {
+            padding: 8px 15px;
+            border: 1px solid var(--gray);
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+
+        .apply-btn {
+            padding: 8px 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .kpi-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .kpi-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .kpi-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 119, 255, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            transition: var(--transition);
+        }
+
+        .kpi-card:hover .kpi-icon {
+            background: var(--accent);
+            color: var(--light);
+            transform: scale(1.1);
+        }
+
+        .kpi-content {
+            flex: 1;
+        }
+
+        .kpi-content h3 {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            margin-bottom: 5px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+
+        .kpi-label {
+            font-size: 0.75rem;
+            color: var(--medium-gray);
+        }
+
+        /* NEW: KPI Trend Indicator */
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
+
+        /* NEW: AI Insights Card */
+        .ai-insights-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .ai-insights-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .ai-insights-left i {
+            font-size: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 50%;
+        }
+
+        .ai-insights-text h3 {
+            margin-bottom: 5px;
+        }
+
+        .ai-insights-text p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .ai-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        /* Charts Row */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray);
+            transition: var(--transition);
+        }
+
+        .chart-card:hover {
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .chart-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-card h3 i {
+            color: var(--accent);
+        }
+
+        /* NEW: Chart Controls */
+        .chart-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .chart-control-btn {
+            padding: 5px 15px;
+            border: 1px solid var(--gray);
+            border-radius: 20px;
+            background: var(--light);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .chart-control-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Activity Section */
+        .activity-section {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray);
+            transition: var(--transition);
+        }
+
+        .activity-section:hover {
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .activity-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .activity-section h3 i {
+            color: var(--accent);
+        }
+
+        /* NEW: Activity Filters */
+        .activity-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 5px 15px;
+            border: 1px solid var(--gray);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-chip:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .filter-chip.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .activity-table-container {
+            overflow-x: auto;
+        }
+
+        .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .activity-table th {
+            text-align: left;
+            padding: 15px;
+            background: var(--light-gray);
+            color: var(--dark-gray);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--gray);
+        }
+
+        .activity-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--gray);
+            color: var(--primary);
+        }
+
+        .activity-table tr {
+            transition: var(--transition);
+        }
+
+        .activity-table tbody tr:hover {
+            background: rgba(0, 119, 255, 0.02);
+        }
+
+        .badge-rejection {
+            background: rgba(255, 68, 68, 0.1);
+            color: var(--danger);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-correction {
+            background: rgba(255, 170, 0, 0.1);
+            color: var(--warning);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* NEW: Status Badge for Success */
+        .badge-success {
+            background: rgba(0, 204, 102, 0.1);
+            color: var(--success);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--medium-gray);
+            padding: 30px !important;
+            font-style: italic;
+        }
+
+        /* NEW: Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            width: 35px;
+            height: 35px;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            background: var(--light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .page-btn:hover,
+        .page-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+            color: var(--light);
+            padding: 30px 0;
+            margin-top: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--accent) 30%, 
+                var(--accent-light) 50%, 
+                var(--accent) 70%, 
+                transparent 100%);
+            opacity: 0.5;
+        }
+
+        .footer-content {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 30px;
+            text-align: center;
+        }
+
+        .footer p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        .footer i {
+            color: var(--accent);
+            margin: 0 5px;
+        }
+
+        .last-updated {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 868px) {
+            #menu {
+                display: none;
+            }
+            
+            .menuIcon {
+                display: block;
+            }
+            
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .dashboard-header p {
+                padding-left: 0;
+            }
+            
+            .export-buttons,
+            .date-range {
+                margin-left: 0;
+            }
+            
+            .ai-insights-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .ai-insights-left {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 0 20px;
+                margin-top: 150px;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .kpi-card {
+                padding: 20px;
+            }
+            
+            .nav-wrapper {
+                padding: 0 20px;
+            }
+            
+            .logo-text {
+                font-size: 1.2rem;
+            }
+            
+            .badge {
+                display: none;
+            }
+            
+            .activity-table th, 
+            .activity-table td {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Fixed Navbar with Logo Image -->
+<nav id="navbar" class="navbar-white">
+    <div class="nav-wrapper">
+        <a href="/" class="logo">
+            <!-- Logo Image - 100x100 with fallback -->
+            <img src="/logo.png" alt="EntitleAI Logo" 
+                 style="width: 100px; height: 100px; border-radius: 50px; object-fit: cover;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <i class="fas fa-shield-alt" style="display: none; width: 45px; height: 45px;"></i>
+            <span class="logo-text">Entitle<span class="logo-highlight">AI</span></span>
+            <span class="badge">Dashboard</span>
+        </a>
+
+        <!-- Desktop Menu -->
+        <ul id="menu">
+            <li><a href="/" class="nav-link"><i class="fas fa-home"></i> Eligibility Check</a></li>
+            <li><a href="/dashboard" class="nav-link active"><i class="fas fa-chart-bar"></i> Dashboard</a></li>
+            <li><a href="/ai-insights" class="nav-link"><i class="fas fa-brain"></i> AI Insights</a></li>
+            
+            <!-- User menu -->
+            <li class="nav-link" style="display: flex; align-items: center; gap: 10px;" id="userMenu">
+                <span id="usernameDisplay"></span>
+                <button onclick="logout()" style="background: none; border: none; color: var(--danger); cursor: pointer;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </li>
+        </ul>
+        
+        <!-- Mobile Menu Icon -->
+        <div class="menuIcon">
+            <span class="icon"></span>
+            <span class="icon"></span>
+            <span class="icon"></span>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Overlay Menu -->
+<div class="overlay-menu">
+    <ul>
+        <li><a href="/"><i class="fas fa-home"></i> Eligibility Check</a></li>
+        <li><a href="/dashboard"><i class="fas fa-chart-bar"></i> Dashboard</a></li>
+        <li><a href="/ai-insights"><i class="fas fa-brain"></i> AI Insights</a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<main class="main-content">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <h2>
+            <i class="fas fa-chart-pie"></i>
+            Pilot Performance Dashboard
+        </h2>
+        <p>
+            <i class="fas fa-map-marker-alt" style="color: var(--accent);"></i> Villupuram District | 
+            <i class="fas fa-users" style="color: var(--accent);"></i> 1,000 Households | 
+            <i class="fas fa-calendar" style="color: var(--accent);"></i> Jan-Jun 2027
+        </p>
+
+        <!-- Export Buttons -->
+        <div class="export-buttons">
+            <button class="btn-export" onclick="exportData('pdf')">
+                <i class="fas fa-file-pdf"></i> PDF
+            </button>
+            <button class="btn-export" onclick="exportData('excel')">
+                <i class="fas fa-file-excel"></i> Excel
+            </button>
+            <button class="btn-export" onclick="exportData('csv')">
+                <i class="fas fa-file-csv"></i> CSV
+            </button>
+            <button class="btn-export" onclick="exportData('image')">
+                <i class="fas fa-image"></i> Image
+            </button>
+        </div>
+
+        <!-- Date Range Picker -->
+        <div class="date-range">
+            <input type="date" id="startDate" class="date-input" value="2027-01-01">
+            <span>to</span>
+            <input type="date" id="endDate" class="date-input" value="2027-06-30">
+            <button class="apply-btn" onclick="applyDateRange()">Apply</button>
+        </div>
+    </div>
+
+    <!-- AI Insights Card -->
+    <div class="ai-insights-card">
+        <div class="ai-insights-left">
+            <i class="fas fa-brain"></i>
+            <div class="ai-insights-text">
+                <h3>AI Model Active: 89% Accuracy</h3>
+                <p>Random Forest model trained on 1,000 households. Detected 342 households with eligibility gaps.</p>
+            </div>
+        </div>
+        <div class="ai-badge">
+            <i class="fas fa-shield-alt"></i> Last trained: Feb 19, 2027
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon">👥</div>
+            <div class="kpi-content">
+                <h3>Total Households</h3>
+                <div class="kpi-value" id="totalHouseholds">1,000</div>
+                <div class="kpi-label">Fixed denominator</div>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon">🎯</div>
+            <div class="kpi-content">
+                <h3>With Entitlement Gaps</h3>
+                <div class="kpi-value" id="householdsWithGaps">342</div>
+                <div class="kpi-label">Eligible but not enrolled <span class="trend-indicator trend-up"><i class="fas fa-arrow-up"></i> 12%</span></div>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon">🔄</div>
+            <div class="kpi-content">
+                <h3>Avg. Correction Cycles</h3>
+                <div class="kpi-value" id="avgCorrections">2.8</div>
+                <div class="kpi-label">↓ 20% from baseline <span class="trend-indicator trend-down"><i class="fas fa-arrow-down"></i> 20%</span></div>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon">✅</div>
+            <div class="kpi-content">
+                <h3>Rejection Reduction</h3>
+                <div class="kpi-value" id="rejectionReduction">42%</div>
+                <div class="kpi-label">Against baseline (3.0 → 1.7)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+        <div class="chart-card">
+            <h3><i class="fas fa-exclamation-triangle"></i> Rejection Reasons</h3>
+            <!-- Chart Controls -->
+            <div class="chart-controls">
+                <button class="chart-control-btn active" onclick="changeChartType('rejection', 'bar')">Bar</button>
+                <button class="chart-control-btn" onclick="changeChartType('rejection', 'pie')">Pie</button>
+                <button class="chart-control-btn" onclick="changeChartType('rejection', 'doughnut')">Doughnut</button>
+            </div>
+            <canvas id="rejectionChart" style="max-height: 300px;"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3><i class="fas fa-chart-line"></i> Weekly Activity Trend</h3>
+            <!-- Chart Controls -->
+            <div class="chart-controls">
+                <button class="chart-control-btn active" onclick="changeTrendType('weekly')">Weekly</button>
+                <button class="chart-control-btn" onclick="changeTrendType('monthly')">Monthly</button>
+                <button class="chart-control-btn" onclick="changeTrendType('quarterly')">Quarterly</button>
+            </div>
+            <canvas id="trendChart" style="max-height: 300px;"></canvas>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="activity-section">
+        <h3><i class="fas fa-history"></i> Recent Rejections & Corrections</h3>
+        
+        <!-- Activity Filters -->
+        <div class="activity-filters">
+            <span class="filter-chip active" onclick="filterActivity('all')">All</span>
+            <span class="filter-chip" onclick="filterActivity('rejection')">Rejections</span>
+            <span class="filter-chip" onclick="filterActivity('correction')">Corrections</span>
+            <span class="filter-chip" onclick="filterActivity('success')">Success</span>
+            <span class="filter-chip" onclick="filterActivity('today')">Today</span>
+        </div>
+
+        <div class="activity-table-container">
+            <table class="activity-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Household ID</th>
+                        <th>Action</th>
+                        <th>Details</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="activityTableBody">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">4</button>
+            <button class="page-btn">5</button>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <p><i class="fas fa-shield-alt"></i> EntitleAI-Pilot | Real-time KPI tracking | Last updated: <span id="lastUpdated" class="last-updated"></span></p>
+    </div>
+</footer>
+
+<script>
+    // ==================== LOGIN CHECK ====================
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+        document.getElementById('usernameDisplay').innerHTML = 
+            `<i class="fas fa-user-circle"></i> ${user.username} (${user.role})`;
+    } else {
+        window.location.href = '/login';
+    }
+
+    async function logout() {
+        await fetch('/logout');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+    }
+
+    // Mobile Menu Toggle
+    const menuIcon = document.querySelector('.menuIcon');
+    const overlayMenu = document.querySelector('.overlay-menu');
+    const body = document.body;
+
+    menuIcon.addEventListener('click', function() {
+        this.classList.toggle('toggle');
+        overlayMenu.classList.toggle('show');
+        body.style.overflow = overlayMenu.classList.contains('show') ? 'hidden' : '';
+    });
+
+    // Close mobile menu when clicking links
+    document.querySelectorAll('.overlay-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            menuIcon.classList.remove('toggle');
+            overlayMenu.classList.remove('show');
+            body.style.overflow = '';
+        });
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Update last updated time
+    function updateLastUpdated() {
+        const now = new Date();
+        const formatted = now.toLocaleString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+        document.getElementById('lastUpdated').textContent = formatted;
+    }
+    updateLastUpdated();
+    setInterval(updateLastUpdated, 60000);
+
+    // Chart instances
+    let rejectionChart, trendChart;
+
+    // Initialize Charts
+    function initCharts() {
+        // Rejection Reasons Chart
+        const rejectionCtx = document.getElementById('rejectionChart').getContext('2d');
+        rejectionChart = new Chart(rejectionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Name Mismatch', 'Missing Income', 'Age Proof', 'Caste Cert', 'Bank Details'],
+                datasets: [{
+                    label: 'Number of Rejections',
+                    data: [45, 38, 32, 24, 18],
+                    backgroundColor: [
+                        'rgba(255, 68, 68, 0.8)',
+                        'rgba(255, 68, 68, 0.7)',
+                        'rgba(255, 68, 68, 0.6)',
+                        'rgba(255, 68, 68, 0.5)',
+                        'rgba(255, 68, 68, 0.4)'
+                    ],
+                    borderColor: '#ff4444',
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Weekly Trend Chart
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [
+                    {
+                        label: 'Applications',
+                        data: [65, 72, 68, 84, 92, 58, 42],
+                        borderColor: '#0077ff',
+                        backgroundColor: 'rgba(0, 119, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#0077ff',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'Rejections',
+                        data: [18, 22, 16, 24, 28, 12, 8],
+                        borderColor: '#ff4444',
+                        backgroundColor: 'rgba(255, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#ff4444',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        display: true,
+                        position: 'top',
+                        labels: { usePointStyle: true }
+                    }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    // NEW: Change chart type
+    window.changeChartType = function(chart, type) {
+        if (chart === 'rejection') {
+            rejectionChart.config.type = type;
+            rejectionChart.update();
+        }
+        
+        // Update active button
+        document.querySelectorAll('.chart-control-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+    };
+
+    // NEW: Change trend type
+    window.changeTrendType = function(type) {
+        let newData, newLabels;
+        
+        if (type === 'weekly') {
+            newLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            newData = [65, 72, 68, 84, 92, 58, 42];
+        } else if (type === 'monthly') {
+            newLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+            newData = [280, 310, 290, 320];
+        } else {
+            newLabels = ['Jan', 'Feb', 'Mar'];
+            newData = [850, 920, 880];
+        }
+        
+        trendChart.data.labels = newLabels;
+        trendChart.data.datasets[0].data = newData;
+        trendChart.data.datasets[1].data = newData.map(v => Math.round(v * 0.3));
+        trendChart.update();
+    };
+
+    // NEW: Export data
+    window.exportData = function(format) {
+        const data = {
+            totalHouseholds: 1000,
+            gaps: 342,
+            avgCycles: 2.8,
+            reduction: '42%',
+            timestamp: new Date().toISOString()
+        };
+        
+        if (format === 'pdf') {
+            alert('PDF export - Would generate PDF report');
+        } else if (format === 'excel') {
+            alert('Excel export - Would generate Excel file');
+        } else if (format === 'csv') {
+            alert('CSV export - Would generate CSV file');
+        } else if (format === 'image') {
+            // Capture chart as image
+            const chartCanvas = document.getElementById('rejectionChart');
+            const link = document.createElement('a');
+            link.download = 'entitleai-chart.png';
+            link.href = chartCanvas.toDataURL();
+            link.click();
+        }
+    };
+
+    // NEW: Apply date range
+    window.applyDateRange = function() {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        alert(`Filtering data from ${start} to ${end}`);
+        // Would refresh data here
+    };
+
+    // NEW: Filter activity
+    window.filterActivity = function(type) {
+        // Update active filter
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        // Filter data
+        populateActivityTable(type);
+    };
+
+    // Populate Activity Table with filter
+    function populateActivityTable(filter = 'all') {
+        const allActivities = [
+            { time: '10:30 AM', date: 'Today', id: 'VILL001234', action: 'rejection', details: 'Name mismatch in documents' },
+            { time: '10:15 AM', date: 'Today', id: 'VILL004567', action: 'rejection', details: 'Missing income certificate' },
+            { time: '09:45 AM', date: 'Today', id: 'VILL007890', action: 'correction', details: 'Age proof not provided' },
+            { time: 'Yesterday', date: '4:30 PM', id: 'VILL002345', action: 'rejection', details: 'Caste certificate expired' },
+            { time: 'Yesterday', date: '3:15 PM', id: 'VILL006789', action: 'correction', details: 'Photo not matching' },
+            { time: 'Yesterday', date: '11:20 AM', id: 'VILL003456', action: 'rejection', details: 'Wrong bank account details' },
+            { time: 'Yesterday', date: '10:05 AM', id: 'VILL008901', action: 'success', details: 'Application approved' }
+        ];
+
+        let filtered = allActivities;
+        if (filter !== 'all') {
+            filtered = allActivities.filter(a => a.action === filter || 
+                (filter === 'today' && a.date === 'Today'));
+        }
+
+        const tbody = document.getElementById('activityTableBody');
+        tbody.innerHTML = filtered.map(a => {
+            let badgeClass = 'badge-rejection';
+            if (a.action === 'correction') badgeClass = 'badge-correction';
+            if (a.action === 'success') badgeClass = 'badge-success';
+            
+            return `
+                <tr>
+                    <td><i class="far fa-clock" style="color: var(--medium-gray); margin-right: 5px;"></i> ${a.date} ${a.time}</td>
+                    <td><strong style="color: var(--accent);">${a.id}</strong></td>
+                    <td>
+                        <span class="${badgeClass}">
+                            <i class="fas ${a.action === 'rejection' ? 'fa-times-circle' : a.action === 'correction' ? 'fa-sync-alt' : 'fa-check-circle'}"></i>
+                            ${a.action === 'rejection' ? 'Rejected' : a.action === 'correction' ? 'Correction' : 'Success'}
+                        </span>
+                    </td>
+                    <td>${a.details}</td>
+                    <td><i class="fas fa-circle" style="color: ${a.action === 'rejection' ? 'var(--danger)' : a.action === 'correction' ? 'var(--warning)' : 'var(--success)'}; font-size: 0.5rem;"></i> Active</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Initialize everything on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        initCharts();
+        populateActivityTable();
+        
+        // Set active nav link
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

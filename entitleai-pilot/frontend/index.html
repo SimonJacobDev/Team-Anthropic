@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EntitleAI-Pilot | Smart Welfare Eligibility System</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <style>
+        /* PASTE YOUR EXISTING CSS HERE - KEEP EVERYTHING THE SAME */
+        :root {
+            --primary: #000000;
+            --primary-dark: #333333;
+            --secondary: #666666;
+            --accent: #0077ff;
+            --accent-light: #3399ff;
+            --success: #00cc66;
+            --danger: #ff4444;
+            --warning: #ffaa00;
+            --light: #ffffff;
+            --light-gray: #f8f9fa;
+            --gray: #e0e0e0;
+            --medium-gray: #cccccc;
+            --dark-gray: #666666;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light);
+            color: var(--primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        /* ================= FIXED NAVBAR ================= */
+        .navbar-white {
+            background-color: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: var(--transition);
+            padding: 0;
+        }
+
+        .navbar-white.scrolled {
+            box-shadow: var(--shadow);
+        }
+
+        .nav-wrapper {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.4rem;
+        }
+
+        .logo img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--accent);
+            background: rgba(0, 119, 255, 0.1);
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .logo-highlight {
+            color: var(--accent);
+        }
+
+        .badge {
+            background: var(--accent);
+            color: var(--light);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        #menu {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--dark-gray);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 10px 15px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            border-radius: 8px;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background: rgba(0, 119, 255, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* Mobile Menu Icon */
+        .menuIcon {
+            display: none;
+            width: 30px;
+            height: 24px;
+            position: relative;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .menuIcon .icon {
+            display: block;
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            opacity: 1;
+            left: 0;
+            transform: rotate(0deg);
+            transition: 0.25s ease-in-out;
+        }
+
+        .menuIcon .icon:nth-child(1) { top: 0px; }
+        .menuIcon .icon:nth-child(2) { top: 10px; }
+        .menuIcon .icon:nth-child(3) { top: 20px; }
+
+        .menuIcon.toggle .icon:nth-child(1) {
+            top: 10px;
+            transform: rotate(135deg);
+        }
+
+        .menuIcon.toggle .icon:nth-child(2) {
+            opacity: 0;
+            left: -30px;
+        }
+
+        .menuIcon.toggle .icon:nth-child(3) {
+            top: 10px;
+            transform: rotate(-135deg);
+        }
+
+        /* Overlay Menu */
+        .overlay-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+
+        .overlay-menu.show {
+            transform: translateX(0);
+        }
+
+        .overlay-menu ul {
+            list-style: none;
+            text-align: center;
+            padding: 0;
+        }
+
+        .overlay-menu li {
+            margin: 20px 0;
+        }
+
+        .overlay-menu a {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 12px 30px;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+
+        .overlay-menu a:hover {
+            color: var(--accent);
+            background: rgba(0, 119, 255, 0.05);
+        }
+
+        /* ================= MAIN CONTENT ================= */
+        .main-content {
+            max-width: 1300px;
+            margin: 100px auto 50px;
+            padding: 0 30px;
+        }
+
+        /* Hero/Search Section */
+        .search-section {
+            background: linear-gradient(135deg, var(--light-gray) 0%, var(--light) 100%);
+            border-radius: var(--border-radius);
+            padding: 60px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray);
+        }
+
+        .search-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 10c11.046 0 20 8.954 20 20s-8.954 20-20 20-20-8.954-20-20 8.954-20 20-20zm0 5c8.284 0 15 6.716 15 15s-6.716 15-15 15-15-6.716-15-15 6.716-15 15-15z' fill='%230077ff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.3;
+        }
+
+        .search-container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .search-container h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .search-container h2 i {
+            color: var(--accent);
+            margin-right: 10px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            max-width: 700px;
+            margin-top: 30px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 18px 25px;
+            border: 2px solid var(--gray);
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--light);
+            box-shadow: var(--shadow);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(0, 119, 255, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--light);
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            border: 2px solid var(--accent);
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 119, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--light);
+            color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-voice {
+            background: var(--primary);
+            color: var(--light);
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .btn-voice:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .search-results {
+            margin-top: 30px;
+            max-width: 700px;
+        }
+
+        .result-item {
+            padding: 15px 20px;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .result-item:hover {
+            border-color: var(--accent);
+            transform: translateX(10px);
+            box-shadow: var(--shadow);
+        }
+
+        .result-item i {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .result-item strong {
+            color: var(--accent);
+        }
+
+        .quick-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 15px 20px;
+            background: rgba(0, 119, 255, 0.05);
+            border-radius: 50px;
+            border: 1px solid var(--gray);
+            flex-wrap: wrap;
+        }
+
+        .stat-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        .stat-chip i {
+            color: var(--accent);
+        }
+
+        .stat-chip strong {
+            color: var(--primary);
+            margin-left: 5px;
+        }
+
+        .recent-searches {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .recent-label {
+            color: var(--dark-gray);
+            font-size: 0.85rem;
+        }
+
+        .recent-tag {
+            padding: 5px 15px;
+            background: var(--light);
+            border: 1px solid var(--gray);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .recent-tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .profile-section {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--shadow-hover);
+            border: 1px solid var(--gray);
+            margin-top: 40px;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .profile-header h3 {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .household-id {
+            background: var(--light-gray);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-family: monospace;
+            font-weight: 600;
+            color: var(--accent);
+            border: 1px solid var(--gray);
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .profile-card {
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            border: 1px solid var(--gray);
+            transition: var(--transition);
+        }
+
+        .profile-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow);
+        }
+
+        .profile-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-card h4 i {
+            color: var(--accent);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-item label {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .detail-item span {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .schemes-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .scheme-tag {
+            background: var(--light);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            color: var(--primary);
+            border: 1px solid var(--gray);
+            transition: var(--transition);
+        }
+
+        .scheme-tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .results-section {
+            margin: 40px 0;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .results-header h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .results-header .badge {
+            background: var(--accent);
+            color: var(--light);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+
+        .schemes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .scheme-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            transition: var(--transition);
+            border: 2px solid var(--gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scheme-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .scheme-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .scheme-card.eligible {
+            border-left: 4px solid var(--success);
+        }
+
+        .scheme-card.enrolled {
+            background: var(--light-gray);
+            opacity: 0.8;
+        }
+
+        .scheme-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .scheme-benefit {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--gray);
+        }
+
+        .scheme-category {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .scheme-docs {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .btn-check-docs {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--gray);
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .btn-check-docs:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--light);
+            transform: translateY(-2px);
+        }
+
+        .enrolled-badge {
+            background: var(--success);
+            color: var(--light);
+            padding: 8px 16px;
+            border-radius: 30px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .gaps-section {
+            background: rgba(255, 68, 68, 0.05);
+            border: 2px solid var(--danger);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .gaps-section h3 {
+            color: var(--danger);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gap-item {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .gap-item strong {
+            color: var(--danger);
+            font-size: 1.1rem;
+        }
+
+        .missing-docs {
+            margin-top: 10px;
+            padding-left: 20px;
+            color: var(--danger);
+        }
+
+        .ai-suggestion-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .ai-suggestion-card i {
+            font-size: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 50%;
+        }
+
+        .ai-suggestion-content {
+            flex: 1;
+        }
+
+        .ai-suggestion-content h4 {
+            margin-bottom: 5px;
+        }
+
+        .ai-suggestion-content p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .ai-confidence {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            box-shadow: var(--shadow-hover);
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--dark-gray);
+            transition: var(--transition);
+        }
+
+        .close:hover {
+            color: var(--danger);
+        }
+
+        .form-group {
+            margin: 25px 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .checklist {
+            background: rgba(0, 204, 102, 0.1);
+            border: 2px solid var(--success);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .checklist h4 {
+            color: var(--success);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checklist ul {
+            list-style: none;
+        }
+
+        .checklist li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: var(--primary);
+        }
+
+        .checklist li:before {
+            content: "✓";
+            color: var(--success);
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+
+        .share-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .share-btn.whatsapp { background: #25D366; }
+        .share-btn.twitter { background: #1DA1F2; }
+        .share-btn.email { background: var(--dark-gray); }
+
+        .share-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+            color: var(--light);
+            padding: 60px 0 30px;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--accent) 30%, 
+                var(--accent-light) 50%, 
+                var(--accent) 70%, 
+                transparent 100%);
+            opacity: 0.5;
+        }
+
+        .footer-content {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 30px;
+            text-align: center;
+        }
+
+        .footer p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        .footer i {
+            color: var(--accent);
+            margin: 0 5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: var(--dark-gray);
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 30px;
+            color: var(--danger);
+        }
+
+        @media (max-width: 1024px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 868px) {
+            #menu {
+                display: none;
+            }
+            .menuIcon {
+                display: block;
+            }
+            .search-section {
+                padding: 40px 30px;
+            }
+            .search-container h2 {
+                font-size: 2rem;
+            }
+            .search-box {
+                flex-direction: column;
+            }
+            .profile-section {
+                padding: 30px 20px;
+            }
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            .schemes-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 0 20px;
+                margin-top: 80px;
+            }
+            .search-section {
+                padding: 30px 20px;
+            }
+            .profile-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .nav-wrapper {
+                padding: 0 20px;
+            }
+            .logo-text {
+                font-size: 1.2rem;
+            }
+            .badge {
+                display: none;
+            }
+            .quick-stats {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Fixed Navbar with Logo Image -->
+<nav id="navbar" class="navbar-white">
+    <div class="nav-wrapper">
+        <a href="/" class="logo">
+            <!-- Logo Image - Place your logo.png in the frontend folder -->
+            <img src="/logo.png" alt="EntitleAI Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <i class="fas fa-shield-alt" style="display: none;"></i>
+            <span class="logo-text">Entitle<span class="logo-highlight">AI</span></span>
+            <span class="badge">Pilot</span>
+        </a>
+
+        <!-- Desktop Menu -->
+        <ul id="menu">
+            <li><a href="/" class="nav-link active"><i class="fas fa-home"></i> Eligibility Check</a></li>
+            <li><a href="/dashboard" class="nav-link"><i class="fas fa-chart-bar"></i> Dashboard</a></li>
+            <li><a href="/ai-insights" class="nav-link"><i class="fas fa-brain"></i> AI Insights</a></li>
+            
+            <!-- User menu -->
+            <li class="nav-link" style="display: flex; align-items: center; gap: 10px;" id="userMenu">
+                <span id="usernameDisplay"></span>
+                <button onclick="logout()" style="background: none; border: none; color: var(--danger); cursor: pointer;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </li>
+        </ul>
+        
+        <!-- Mobile Menu Icon -->
+        <div class="menuIcon">
+            <span class="icon"></span>
+            <span class="icon"></span>
+            <span class="icon"></span>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Overlay Menu -->
+<div class="overlay-menu">
+    <ul>
+        <li><a href="/"><i class="fas fa-home"></i> Eligibility Check</a></li>
+        <li><a href="/dashboard"><i class="fas fa-chart-bar"></i> Dashboard</a></li>
+        <li><a href="/ai-insights"><i class="fas fa-brain"></i> AI Insights</a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<main class="main-content">
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="search-container">
+            <h2><i class="fas fa-search"></i> Check Household Eligibility</h2>
+            <p style="color: var(--dark-gray); max-width: 600px;">Enter household ID or name to check welfare scheme eligibility across 40+ Government Schemes</p>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="e.g., VILL000001 or Kaliammal...">
+                <button id="searchBtn" class="btn-primary">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <div class="stat-chip">
+                    <i class="fas fa-users"></i>
+                    <span>Total Households: <strong>1,000</strong></span>
+                </div>
+                <div class="stat-chip">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Active Schemes: <strong>40+</strong></span>
+                </div>
+                <div class="stat-chip">
+                    <i class="fas fa-clock"></i>
+                    <span>Avg Response: <strong>0.8s</strong></span>
+                </div>
+                <div class="stat-chip">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Accuracy: <strong>89%</strong></span>
+                </div>
+            </div>
+
+            <!-- Recent Searches -->
+            <div class="recent-searches">
+                <span class="recent-label">Recent:</span>
+                <span class="recent-tag" onclick="quickSearch('VILL000001')">VILL000001</span>
+                <span class="recent-tag" onclick="quickSearch('VILL000002')">VILL000002</span>
+                <span class="recent-tag" onclick="quickSearch('VILL000003')">VILL000003</span>
+                <span class="recent-tag" onclick="quickSearch('VILL000004')">VILL000004</span>
+                <span class="recent-tag" onclick="quickSearch('VILL000005')">VILL000005</span>
+            </div>
+            
+            <div id="searchResults" class="search-results"></div>
+        </div>
+    </section>
+
+    <!-- Household Profile Section -->
+    <section id="profileSection" class="profile-section" style="display: none;">
+        <div class="profile-header">
+            <h3><i class="fas fa-user-circle" style="color: var(--accent); margin-right: 10px;"></i> Household Profile</h3>
+            <span id="householdId" class="household-id"></span>
+        </div>
+        
+        <div class="profile-grid">
+            <div class="profile-card">
+                <h4><i class="fas fa-info-circle"></i> Basic Details</h4>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <label>Name</label>
+                        <span id="profileName"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Age / Gender</label>
+                        <span id="profileAgeGender"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Village</label>
+                        <span id="profileVillage"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Ration Card</label>
+                        <span id="profileRation"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Monthly Income</label>
+                        <span id="profileIncome"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Occupation</label>
+                        <span id="profileOccupation"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Caste</label>
+                        <span id="profileCaste"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Disability</label>
+                        <span id="profileDisability"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <h4><i class="fas fa-check-circle"></i> Currently Enrolled</h4>
+                <div id="enrolledSchemes" class="schemes-list"></div>
+            </div>
+        </div>
+
+        <!-- Voice Assistant -->
+        <div style="text-align: center; margin: 30px 0;">
+            <button id="voiceBtn" class="btn-voice">
+                <i class="fas fa-volume-up"></i> Read
+            </button>
+        </div>
+
+        <!-- AI Suggestion -->
+        <div id="aiSuggestion" class="ai-suggestion-card" style="display: none;">
+            <i class="fas fa-robot"></i>
+            <div class="ai-suggestion-content">
+                <h4>AI-Powered Suggestion</h4>
+                <p id="aiSuggestionText">Based on your profile, you may be eligible for additional schemes</p>
+            </div>
+            <span class="ai-confidence" id="aiConfidence">92% confidence</span>
+        </div>
+
+        <!-- Eligibility Results -->
+        <div class="results-section">
+            <div class="results-header">
+                <h3><i class="fas fa-clipboard-check"></i> Eligibility Analysis (40+ Government Schemes)</h3>
+                <span class="badge" id="eligibleCount">0 schemes</span>
+            </div>
+
+            <div id="eligibleSchemes" class="schemes-container"></div>
+        </div>
+
+        <!-- Document Gaps -->
+        <div id="gapsSection" class="gaps-section" style="display: none;">
+            <h3><i class="fas fa-exclamation-triangle"></i> Document Gaps Detected</h3>
+            <div id="documentGaps" class="gaps-container"></div>
+        </div>
+
+        <!-- Share Buttons -->
+        <div class="share-buttons">
+            <button class="share-btn whatsapp" onclick="shareOnWhatsApp()" title="Share on WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </button>
+            <button class="share-btn twitter" onclick="shareOnTwitter()" title="Share on Twitter">
+                <i class="fab fa-twitter"></i>
+            </button>
+            <button class="share-btn email" onclick="shareByEmail()" title="Share via Email">
+                <i class="fas fa-envelope"></i>
+            </button>
+        </div>
+
+        <!-- Correction Modal -->
+        <div id="correctionModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3><i class="fas fa-tools"></i> Document Correction Required</h3>
+                <p id="schemeNameDisplay" style="color: var(--accent); margin: 15px 0;"></p>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-question-circle"></i> Rejection Reason</label>
+                    <select id="rejectionReason">
+                        <option value="">Select reason...</option>
+                        <option value="Name mismatch in documents">Name mismatch in documents</option>
+                        <option value="Missing income certificate">Missing income certificate</option>
+                        <option value="Age proof not provided">Age proof not provided</option>
+                        <option value="Caste certificate expired">Caste certificate expired</option>
+                        <option value="Photo not matching">Photo not matching</option>
+                        <option value="Wrong bank account details">Wrong bank account details</option>
+                        <option value="Land records not updated">Land records not updated</option>
+                    </select>
+                </div>
+
+                <button id="submitCorrection" class="btn-primary" style="width: 100%; justify-content: center;">
+                    <i class="fas fa-clipboard-list"></i> Generate Correction Checklist
+                </button>
+                
+                <div id="checklistOutput" class="checklist" style="display: none;">
+                    <h4><i class="fas fa-check-circle"></i> Correction Checklist</h4>
+                    <ul id="checklistItems"></ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <p><i class="fas fa-shield-alt"></i> EntitleAI-Pilot | 40+ Government Schemes | 1,000 Households</p>
+        <p style="margin-top: 15px; font-size: 0.85rem;">
+            <i class="fas fa-code"></i> Developed for Hackathon | 
+            <i class="fas fa-users"></i> Making welfare accessible to all
+        </p>
+    </div>
+</footer>
+
+<script>
+    // ==================== LOGIN CHECK ====================
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+        document.getElementById('usernameDisplay').innerHTML = 
+            `<i class="fas fa-user-circle"></i> ${user.username} (${user.role})`;
+    } else {
+        window.location.href = '/login';
+    }
+
+    async function logout() {
+        await fetch('/logout');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+    }
+
+    // ==================== MOBILE MENU ====================
+    const menuIcon = document.querySelector('.menuIcon');
+    const overlayMenu = document.querySelector('.overlay-menu');
+    const body = document.body;
+
+    menuIcon.addEventListener('click', function() {
+        this.classList.toggle('toggle');
+        overlayMenu.classList.toggle('show');
+        body.style.overflow = overlayMenu.classList.contains('show') ? 'hidden' : '';
+    });
+
+    document.querySelectorAll('.overlay-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            menuIcon.classList.remove('toggle');
+            overlayMenu.classList.remove('show');
+            body.style.overflow = '';
+        });
+    });
+
+    // ==================== NAVBAR SCROLL ====================
+    window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('navbar');
+        navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ==================== MODAL ====================
+    const modal = document.getElementById('correctionModal');
+    const closeBtn = document.querySelector('.close');
+
+    closeBtn.addEventListener('click', () => modal.classList.remove('show'));
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('show');
+    });
+
+    // ==================== SEARCH FUNCTIONALITY ====================
+    document.getElementById('searchBtn').addEventListener('click', performSearch);
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performSearch();
+    });
+
+    async function performSearch() {
+        const query = document.getElementById('searchInput').value.trim();
+        if (!query) return;
+
+        const resultsDiv = document.getElementById('searchResults');
+        resultsDiv.innerHTML = '<div class="result-item"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+
+        try {
+            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+            const results = await response.json();
+            
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<div class="result-item">No households found</div>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = results.map(hh => `
+                <div class="result-item" onclick="loadHousehold('${hh.id}')">
+                    <i class="fas fa-user"></i>
+                    <div>
+                        <strong>${hh.id}</strong> - ${hh.name}<br>
+                        <small>${hh.village}</small>
+                    </div>
+                </div>
+            `).join('');
+            
+            saveRecentSearch(query);
+        } catch (error) {
+            console.error('Search error:', error);
+            resultsDiv.innerHTML = '<div class="result-item error">Error searching</div>';
+        }
+    }
+
+    // ==================== QUICK SEARCH ====================
+    window.quickSearch = function(query) {
+        document.getElementById('searchInput').value = query;
+        performSearch();
+    };
+
+    // ==================== RECENT SEARCHES ====================
+    function saveRecentSearch(query) {
+        let recents = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+        if (!recents.includes(query)) {
+            recents.unshift(query);
+            if (recents.length > 5) recents.pop();
+            localStorage.setItem('recentSearches', JSON.stringify(recents));
+        }
+        loadRecentSearches();
+    }
+
+    function loadRecentSearches() {
+        const recents = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+        const container = document.querySelector('.recent-searches');
+        if (container) {
+            const tags = container.querySelectorAll('.recent-tag');
+            tags.forEach(tag => tag.remove());
+            
+            recents.forEach(query => {
+                const tag = document.createElement('span');
+                tag.className = 'recent-tag';
+                tag.textContent = query;
+                tag.setAttribute('onclick', `quickSearch('${query}')`);
+                container.appendChild(tag);
+            });
+        }
+    }
+
+    // ==================== LOAD HOUSEHOLD - FIXED TO SHOW REAL DATA ====================
+    window.loadHousehold = async function(id) {
+        document.getElementById('profileSection').style.display = 'block';
+        document.getElementById('householdId').textContent = id;
+        document.getElementById('eligibleSchemes').innerHTML = '<div class="loading">Loading schemes...</div>';
+
+        try {
+            const response = await fetch(`/api/household/${id}`);
+            const data = await response.json();
+            
+            if (data.error) {
+                document.getElementById('eligibleSchemes').innerHTML = `<div class="error-message">${data.error}</div>`;
+                return;
+            }
+            
+            // Update profile with REAL data from database
+            document.getElementById('profileName').textContent = data.household.name || 'Unknown';
+            document.getElementById('profileAgeGender').textContent = 
+                `${data.household.age || '?'} yrs / ${data.household.gender || '?'}`;
+            document.getElementById('profileVillage').textContent = data.household.village || 'Unknown';
+            document.getElementById('profileRation').textContent = data.household.ration_type || 'Unknown';
+            document.getElementById('profileIncome').textContent = `₹${data.household.income || 0}/month`;
+            document.getElementById('profileOccupation').textContent = data.household.occupation || 'Unknown';
+            document.getElementById('profileCaste').textContent = data.household.caste || 'Unknown';
+            document.getElementById('profileDisability').textContent = data.household.disability || 'None';
+            
+            // Update enrolled schemes
+            const enrolledDiv = document.getElementById('enrolledSchemes');
+            if (data.enrolled_schemes && data.enrolled_schemes.length > 0) {
+                enrolledDiv.innerHTML = data.enrolled_schemes.map(s => 
+                    `<span class="scheme-tag">${s}</span>`
+                ).join('');
+            } else {
+                enrolledDiv.innerHTML = '<p class="text-gray">No schemes currently enrolled</p>';
+            }
+            
+            // Update eligible count
+            document.getElementById('eligibleCount').textContent = `${data.eligible_schemes.length} schemes`;
+            
+            // Display ALL eligible schemes from the database
+            if (data.eligible_schemes && data.eligible_schemes.length > 0) {
+                document.getElementById('eligibleSchemes').innerHTML = 
+                    data.eligible_schemes.map(scheme => `
+                        <div class="scheme-card eligible">
+                            <h4>${scheme.scheme_name}</h4>
+                            <div class="scheme-category">${scheme.category || 'Central Government'}</div>
+                            <div class="scheme-benefit">${scheme.benefit}</div>
+                            <div class="scheme-docs">
+                                <strong>Required:</strong> ${scheme.required_docs ? scheme.required_docs.join(', ') : 'Contact office'}
+                            </div>
+                            <button class="btn-check-docs" onclick="checkDocuments('${scheme.scheme_name}')">
+                                <i class="fas fa-file-invoice"></i> Check Documents
+                            </button>
+                        </div>
+                    `).join('');
+            } else {
+                document.getElementById('eligibleSchemes').innerHTML = '<p>No eligible schemes found</p>';
+            }
+            
+            // Show document gaps if any
+            if (data.document_gaps && Object.keys(data.document_gaps).length > 0) {
+                displayDocumentGaps(data.document_gaps);
+            } else {
+                document.getElementById('gapsSection').style.display = 'none';
+            }
+            
+            // Show AI suggestion
+            if (data.eligible_schemes.length > 0) {
+                document.getElementById('aiSuggestion').style.display = 'flex';
+                document.getElementById('aiSuggestionText').innerHTML = 
+                    `Based on your profile, you are eligible for ${data.eligible_schemes.length} schemes. ` +
+                    `Top recommendations: ${data.eligible_schemes.slice(0,3).map(s => s.scheme_name.split(' - ')[0]).join(', ')}.`;
+                document.getElementById('aiConfidence').innerHTML = '92% confidence';
+            } else {
+                document.getElementById('aiSuggestion').style.display = 'none';
+            }
+
+            // Scroll to profile
+            document.getElementById('profileSection').scrollIntoView({ behavior: 'smooth' });
+            
+        } catch (error) {
+            console.error('Error loading household:', error);
+            document.getElementById('eligibleSchemes').innerHTML = '<div class="error-message">Error loading data</div>';
+        }
+    };
+
+    // ==================== DOCUMENT GAPS ====================
+    function displayDocumentGaps(gaps) {
+        const container = document.getElementById('documentGaps');
+        const gapsSection = document.getElementById('gapsSection');
+        
+        container.innerHTML = Object.entries(gaps).map(([scheme, missing]) => `
+            <div class="gap-item">
+                <strong>${scheme}</strong>
+                <div class="missing-docs">
+                    Missing: ${missing.join(', ')}
+                </div>
+            </div>
+        `).join('');
+        
+        gapsSection.style.display = 'block';
+    }
+
+    // ==================== CHECK DOCUMENTS ====================
+    window.checkDocuments = function(schemeName) {
+        document.getElementById('schemeNameDisplay').textContent = `Scheme: ${schemeName}`;
+        document.getElementById('checklistOutput').style.display = 'none';
+        document.getElementById('rejectionReason').value = '';
+        document.getElementById('correctionModal').classList.add('show');
+    };
+
+    // ==================== SUBMIT CORRECTION ====================
+    document.getElementById('submitCorrection').addEventListener('click', async function() {
+        const reason = document.getElementById('rejectionReason').value;
+        if (!reason) {
+            alert('Please select a rejection reason');
+            return;
+        }
+
+        const householdId = document.getElementById('householdId').textContent;
+        const schemeName = document.getElementById('schemeNameDisplay').textContent.replace('Scheme: ', '');
+
+        try {
+            const response = await fetch('/api/submit-correction', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    household_id: householdId,
+                    rejection_reason: reason,
+                    scheme_name: schemeName
+                })
+            });
+            
+            const result = await response.json();
+            
+            const checklistItems = document.getElementById('checklistItems');
+            checklistItems.innerHTML = result.checklist.map(item => `<li>${item}</li>`).join('');
+            document.getElementById('checklistOutput').style.display = 'block';
+        } catch (error) {
+            console.error('Correction error:', error);
+            alert('Error submitting correction');
+        }
+    });
+
+    // ==================== VOICE ASSISTANT ====================
+    document.getElementById('voiceBtn').addEventListener('click', function() {
+        const householdId = document.getElementById('householdId').textContent;
+        const name = document.getElementById('profileName').textContent;
+        const count = document.getElementById('eligibleCount').textContent;
+        
+        const message = new SpeechSynthesisUtterance(
+            `Household ${householdId}. ${name} is eligible for ${count}. Please check documents.`
+        );
+        message.lang = 'ta-IN';
+        window.speechSynthesis.speak(message);
+    });
+
+    // ==================== SHARE FUNCTIONS ====================
+    window.shareOnWhatsApp = function() {
+        const householdId = document.getElementById('householdId').textContent;
+        const text = `Check out eligibility for household ${householdId} on EntitleAI`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    };
+
+    window.shareOnTwitter = function() {
+        const householdId = document.getElementById('householdId').textContent;
+        const text = `Checking eligibility for household ${householdId} on EntitleAI`;
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+    };
+
+    window.shareByEmail = function() {
+        const householdId = document.getElementById('householdId').textContent;
+        const subject = `EntitleAI - Household ${householdId} Eligibility`;
+        const body = `Check out the eligibility details for household ${householdId} on EntitleAI`;
+        window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    };
+
+    // ==================== INITIALIZE ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        loadRecentSearches();
+        document.querySelector('.search-section').classList.add('animate__animated', 'animate__fadeIn');
+    });
+</script>
+
+</body>
+</html>

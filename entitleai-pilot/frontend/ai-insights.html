@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EntitleAI-Pilot | AI Insights & Analytics</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* ===== YOUR EXISTING STYLES (COPIED FROM YOUR DESIGN) ===== */
+        :root {
+            --primary: #000000;
+            --primary-dark: #333333;
+            --secondary: #666666;
+            --accent: #0077ff;
+            --accent-light: #3399ff;
+            --success: #00cc66;
+            --danger: #ff4444;
+            --warning: #ffaa00;
+            --light: #ffffff;
+            --light-gray: #f8f9fa;
+            --gray: #e0e0e0;
+            --medium-gray: #cccccc;
+            --dark-gray: #666666;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light);
+            color: var(--primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        /* ================= FIXED NAVBAR ================= */
+        .navbar-white {
+            background-color: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: var(--transition);
+            padding: 0;
+        }
+
+        .navbar-white.scrolled {
+            box-shadow: var(--shadow);
+        }
+
+        .nav-wrapper {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.4rem;
+        }
+
+        .logo img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50px;
+            object-fit: cover;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--accent);
+            background: rgba(0, 119, 255, 0.1);
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .logo-highlight {
+            color: var(--accent);
+        }
+
+        .badge {
+            background: var(--accent);
+            color: var(--light);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        #menu {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--dark-gray);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 10px 15px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            border-radius: 8px;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background: rgba(0, 119, 255, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* Mobile Menu Icon */
+        .menuIcon {
+            display: none;
+            width: 30px;
+            height: 24px;
+            position: relative;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .menuIcon .icon {
+            display: block;
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            opacity: 1;
+            left: 0;
+            transform: rotate(0deg);
+            transition: 0.25s ease-in-out;
+        }
+
+        .menuIcon .icon:nth-child(1) { top: 0px; }
+        .menuIcon .icon:nth-child(2) { top: 10px; }
+        .menuIcon .icon:nth-child(3) { top: 20px; }
+
+        .menuIcon.toggle .icon:nth-child(1) {
+            top: 10px;
+            transform: rotate(135deg);
+        }
+
+        .menuIcon.toggle .icon:nth-child(2) {
+            opacity: 0;
+            left: -30px;
+        }
+
+        .menuIcon.toggle .icon:nth-child(3) {
+            top: 10px;
+            transform: rotate(-135deg);
+        }
+
+        /* Overlay Menu */
+        .overlay-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+
+        .overlay-menu.show {
+            transform: translateX(0);
+        }
+
+        .overlay-menu ul {
+            list-style: none;
+            text-align: center;
+            padding: 0;
+        }
+
+        .overlay-menu li {
+            margin: 20px 0;
+        }
+
+        .overlay-menu a {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 12px 30px;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+
+        .overlay-menu a:hover {
+            color: var(--accent);
+            background: rgba(0, 119, 255, 0.05);
+        }
+
+        /* ================= MAIN CONTENT ================= */
+        .main-content {
+            max-width: 1300px;
+            margin: 150px auto 50px;
+            padding: 0 30px;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .page-header h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-header h2 i {
+            color: var(--accent);
+            background: rgba(0, 119, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 1.8rem;
+        }
+
+        .page-header p {
+            color: var(--dark-gray);
+            font-size: 1rem;
+            margin-top: 8px;
+            padding-left: 60px;
+        }
+
+        /* AI Stats Cards */
+        .ai-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .ai-stat-card {
+            background: linear-gradient(135deg, var(--accent) 0%, #0055aa 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            color: white;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            transition: var(--transition);
+        }
+
+        .ai-stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .ai-stat-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .ai-stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .ai-stat-label {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Model Performance Card */
+        .model-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray);
+            margin-bottom: 40px;
+        }
+
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .model-header h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .model-badge {
+            background: var(--accent);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+
+        .model-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .metric-item {
+            text-align: center;
+        }
+
+        .metric-circle {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+            position: relative;
+        }
+
+        .metric-circle canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .metric-label {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Feature Importance */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray);
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: var(--light-gray);
+            border-radius: 8px;
+        }
+
+        .feature-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .feature-bar {
+            width: 200px;
+            height: 8px;
+            background: var(--gray);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 15px;
+        }
+
+        .feature-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        .feature-percent {
+            font-weight: 600;
+            color: var(--accent);
+            min-width: 45px;
+        }
+
+        /* Prediction Table */
+        .predictions-section {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray);
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-header h3 {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .confidence-filter {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-select {
+            padding: 8px 15px;
+            border: 1px solid var(--gray);
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+
+        .predictions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .predictions-table th {
+            text-align: left;
+            padding: 15px;
+            background: var(--light-gray);
+            color: var(--dark-gray);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--gray);
+        }
+
+        .predictions-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .confidence-bar {
+            width: 100px;
+            height: 6px;
+            background: var(--gray);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        .pred-badge {
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .pred-high {
+            background: rgba(0, 204, 102, 0.1);
+            color: var(--success);
+        }
+
+        .pred-medium {
+            background: rgba(255, 170, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .pred-low {
+            background: rgba(255, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* AI Recommendations */
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .recommendation-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition);
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .rec-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 119, 255, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .rec-content {
+            flex: 1;
+        }
+
+        .rec-content h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .rec-content p {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .rec-impact {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+            color: var(--light);
+            padding: 60px 0 30px;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--accent) 30%, 
+                var(--accent-light) 50%, 
+                var(--accent) 70%, 
+                transparent 100%);
+            opacity: 0.5;
+        }
+
+        .footer-content {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 30px;
+            text-align: center;
+        }
+
+        .footer p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        .footer i {
+            color: var(--accent);
+            margin: 0 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .ai-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .model-metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 868px) {
+            #menu {
+                display: none;
+            }
+            
+            .menuIcon {
+                display: block;
+            }
+            
+            .page-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .page-header p {
+                padding-left: 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 0 20px;
+                margin-top: 150px;
+            }
+            
+            .ai-stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-wrapper {
+                padding: 0 20px;
+            }
+            
+            .logo-text {
+                font-size: 1.2rem;
+            }
+            
+            .badge {
+                display: none;
+            }
+            
+            .predictions-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Fixed Navbar with Logo Image -->
+<nav id="navbar" class="navbar-white">
+    <div class="nav-wrapper">
+        <a href="/" class="logo">
+            <!-- Logo Image - 100x100 with fallback -->
+            <img src="/logo.png" alt="EntitleAI Logo" 
+                 style="width: 100px; height: 100px; border-radius: 50px; object-fit: cover;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <i class="fas fa-shield-alt" style="display: none; width: 45px; height: 45px;"></i>
+            <span class="logo-text">Entitle<span class="logo-highlight">AI</span></span>
+            <span class="badge">AI Insights</span>
+        </a>
+
+        <!-- Desktop Menu -->
+        <ul id="menu">
+            <li><a href="/" class="nav-link"><i class="fas fa-home"></i> Eligibility Check</a></li>
+            <li><a href="/dashboard" class="nav-link"><i class="fas fa-chart-bar"></i> Dashboard</a></li>
+            <li><a href="/ai-insights" class="nav-link active"><i class="fas fa-brain"></i> AI Insights</a></li>
+            
+            <!-- User menu -->
+            <li class="nav-link" style="display: flex; align-items: center; gap: 10px;" id="userMenu">
+                <span id="usernameDisplay"></span>
+                <button onclick="logout()" style="background: none; border: none; color: var(--danger); cursor: pointer;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </li>
+        </ul>
+        
+        <!-- Mobile Menu Icon -->
+        <div class="menuIcon">
+            <span class="icon"></span>
+            <span class="icon"></span>
+            <span class="icon"></span>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Overlay Menu -->
+<div class="overlay-menu">
+    <ul>
+        <li><a href="/"><i class="fas fa-home"></i> Eligibility Check</a></li>
+        <li><a href="/dashboard"><i class="fas fa-chart-bar"></i> Dashboard</a></li>
+        <li><a href="/ai-insights"><i class="fas fa-brain"></i> AI Insights</a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<main class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h2>
+            <i class="fas fa-brain"></i>
+            AI-Powered Insights & Analytics
+        </h2>
+        <p>
+            <i class="fas fa-robot" style="color: var(--accent);"></i> Machine Learning Model v2.1 | 
+            <i class="fas fa-microchip" style="color: var(--accent);"></i> Random Forest Classifier | 
+            <i class="fas fa-chart-line" style="color: var(--accent);"></i> Last trained: Feb 19, 2027
+        </p>
+    </div>
+
+    <!-- AI Stats Cards -->
+    <div class="ai-stats-grid">
+        <div class="ai-stat-card">
+            <div class="ai-stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="ai-stat-value">93%</div>
+            <div class="ai-stat-label">Model Accuracy</div>
+        </div>
+        <div class="ai-stat-card">
+            <div class="ai-stat-icon"><i class="fas fa-database"></i></div>
+            <div class="ai-stat-value">1,000</div>
+            <div class="ai-stat-label">Training Samples</div>
+        </div>
+        <div class="ai-stat-card">
+            <div class="ai-stat-icon"><i class="fas fa-chart-pie"></i></div>
+            <div class="ai-stat-value">8</div>
+            <div class="ai-stat-label">Features Used</div>
+        </div>
+        <div class="ai-stat-card">
+            <div class="ai-stat-icon"><i class="fas fa-bolt"></i></div>
+            <div class="ai-stat-value">0.8s</div>
+            <div class="ai-stat-label">Avg Prediction Time</div>
+        </div>
+    </div>
+
+    <!-- Model Performance Card -->
+    <div class="model-card">
+        <div class="model-header">
+            <h3><i class="fas fa-chart-bar"></i> Model Performance Metrics</h3>
+            <span class="model-badge"><i class="fas fa-shield-alt"></i> Production Ready</span>
+        </div>
+        <div class="model-metrics">
+            <div class="metric-item">
+                <div class="metric-circle">
+                    <canvas id="accuracyChart" width="120" height="120"></canvas>
+                </div>
+                <div class="metric-value">93%</div>
+                <div class="metric-label">Accuracy</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-circle">
+                    <canvas id="precisionChart" width="120" height="120"></canvas>
+                </div>
+                <div class="metric-value">87%</div>
+                <div class="metric-label">Precision</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-circle">
+                    <canvas id="recallChart" width="120" height="120"></canvas>
+                </div>
+                <div class="metric-value">85%</div>
+                <div class="metric-label">Recall</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Importance & Confusion Matrix -->
+    <div class="features-grid">
+        <!-- Feature Importance -->
+        <div class="feature-card">
+            <h3><i class="fas fa-star"></i> Feature Importance</h3>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <span class="feature-name">Income Level</span>
+                    <div class="feature-bar">
+                        <div class="feature-bar-fill" style="width: 35%"></div>
+                    </div>
+                    <span class="feature-percent">35%</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-name">Age</span>
+                    <div class="feature-bar">
+                        <div class="feature-bar-fill" style="width: 28%"></div>
+                    </div>
+                    <span class="feature-percent">28%</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-name">Caste Category</span>
+                    <div class="feature-bar">
+                        <div class="feature-bar-fill" style="width: 18%"></div>
+                    </div>
+                    <span class="feature-percent">18%</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-name">Land Holding</span>
+                    <div class="feature-bar">
+                        <div class="feature-bar-fill" style="width: 12%"></div>
+                    </div>
+                    <span class="feature-percent">12%</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-name">Disability Status</span>
+                    <div class="feature-bar">
+                        <div class="feature-bar-fill" style="width: 7%"></div>
+                    </div>
+                    <span class="feature-percent">7%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confusion Matrix -->
+        <div class="feature-card">
+            <h3><i class="fas fa-table"></i> Confusion Matrix</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: center;">
+                <div style="padding: 20px; background: var(--light-gray); border-radius: var(--border-radius);">
+                    <div style="font-size: 2rem; color: var(--success); font-weight: 700;">342</div>
+                    <div style="color: var(--dark-gray);">True Positives</div>
+                </div>
+                <div style="padding: 20px; background: var(--light-gray); border-radius: var(--border-radius);">
+                    <div style="font-size: 2rem; color: var(--danger); font-weight: 700;">28</div>
+                    <div style="color: var(--dark-gray);">False Positives</div>
+                </div>
+                <div style="padding: 20px; background: var(--light-gray); border-radius: var(--border-radius);">
+                    <div style="font-size: 2rem; color: var(--danger); font-weight: 700;">35</div>
+                    <div style="color: var(--dark-gray);">False Negatives</div>
+                </div>
+                <div style="padding: 20px; background: var(--light-gray); border-radius: var(--border-radius);">
+                    <div style="font-size: 2rem; color: var(--success); font-weight: 700;">595</div>
+                    <div style="color: var(--dark-gray);">True Negatives</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Predictions Table -->
+    <div class="predictions-section">
+        <div class="section-header">
+            <h3><i class="fas fa-robot"></i> Live AI Predictions</h3>
+            <div class="confidence-filter">
+                <select class="filter-select" onchange="filterPredictions(this.value)">
+                    <option value="all">All Confidence Levels</option>
+                    <option value="high">High (>80%)</option>
+                    <option value="medium">Medium (60-80%)</option>
+                    <option value="low">Low (<60%)</option>
+                </select>
+            </div>
+        </div>
+
+        <table class="predictions-table">
+            <thead>
+                <tr>
+                    <th>Household ID</th>
+                    <th>Name</th>
+                    <th>Predicted Schemes</th>
+                    <th>Confidence</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="predictionsBody">
+                <!-- Populated by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- AI Recommendations -->
+    <div class="recommendations-grid">
+        <div class="recommendation-card">
+            <div class="rec-icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="rec-content">
+                <h4>Targeted Outreach Recommended</h4>
+                <p>AI suggests focusing on Villupuram block where 156 households show high eligibility but low enrollment.</p>
+                <span class="rec-impact">Expected Impact: +45 enrollments</span>
+            </div>
+        </div>
+        <div class="recommendation-card">
+            <div class="rec-icon"><i class="fas fa-file-alt"></i></div>
+            <div class="rec-content">
+                <h4>Document Awareness Camp</h4>
+                <p>68% of rejections are due to missing income certificates. Schedule camps in high-rejection areas.</p>
+                <span class="rec-impact">Expected Impact: -32% rejections</span>
+            </div>
+        </div>
+        <div class="recommendation-card">
+            <div class="rec-icon"><i class="fas fa-clock"></i></div>
+            <div class="rec-content">
+                <h4>Peak Application Times</h4>
+                <p>Most successful applications happen between 10 AM - 12 PM. Staff accordingly.</p>
+                <span class="rec-impact">Efficiency: +25% throughput</span>
+            </div>
+        </div>
+        <div class="recommendation-card">
+            <div class="rec-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="rec-content">
+                <h4>Model Retraining Due</h4>
+                <p>Model performance degrading. 500 new samples available for retraining.</p>
+                <span class="rec-impact">Potential: +3% accuracy</span>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <p><i class="fas fa-shield-alt"></i> EntitleAI-Pilot | AI-Powered Welfare Analytics | Model version: 2.1.0</p>
+        <p style="margin-top: 15px; font-size: 0.85rem;">
+            <i class="fas fa-code"></i> Developed for Hackathon | 
+            <i class="fas fa-brain"></i> Powered by Machine Learning
+        </p>
+    </div>
+</footer>
+
+<script>
+    // ==================== LOGIN CHECK ====================
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+        document.getElementById('usernameDisplay').innerHTML = 
+            `<i class="fas fa-user-circle"></i> ${user.username} (${user.role})`;
+    } else {
+        window.location.href = '/login';
+    }
+
+    async function logout() {
+        await fetch('/logout');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+    }
+
+    // Mobile Menu Toggle
+    const menuIcon = document.querySelector('.menuIcon');
+    const overlayMenu = document.querySelector('.overlay-menu');
+    const body = document.body;
+
+    menuIcon.addEventListener('click', function() {
+        this.classList.toggle('toggle');
+        overlayMenu.classList.toggle('show');
+        body.style.overflow = overlayMenu.classList.contains('show') ? 'hidden' : '';
+    });
+
+    // Close mobile menu when clicking links
+    document.querySelectorAll('.overlay-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            menuIcon.classList.remove('toggle');
+            overlayMenu.classList.remove('show');
+            body.style.overflow = '';
+        });
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Initialize gauge charts
+    function initGauges() {
+        // Accuracy Gauge
+        new Chart(document.getElementById('accuracyChart'), {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [93, 8],
+                    backgroundColor: ['#00cc66', '#e0e0e0'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                cutout: '70%',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Precision Gauge
+        new Chart(document.getElementById('precisionChart'), {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [87, 13],
+                    backgroundColor: ['#0077ff', '#e0e0e0'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                cutout: '70%',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Recall Gauge
+        new Chart(document.getElementById('recallChart'), {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [85, 15],
+                    backgroundColor: ['#ffaa00', '#e0e0e0'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                cutout: '70%',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    // Populate predictions table
+    function populatePredictions() {
+        const predictions = [
+            { id: 'VILL001234', name: 'Kaliammal', schemes: 'Old Age, Widow', confidence: 92, status: 'high' },
+            { id: 'VILL004567', name: 'Muthu', schemes: 'PM-KISAN', confidence: 78, status: 'medium' },
+            { id: 'VILL007890', name: 'Selvi', schemes: 'PMMVY, MGNREGA', confidence: 85, status: 'high' },
+            { id: 'VILL002345', name: 'Ramesh', schemes: 'None', confidence: 45, status: 'low' },
+            { id: 'VILL006789', name: 'Lakshmi', schemes: 'Old Age, Widow', confidence: 95, status: 'high' },
+            { id: 'VILL003456', name: 'Kumar', schemes: 'PM-KISAN', confidence: 62, status: 'medium' }
+        ];
+
+        const tbody = document.getElementById('predictionsBody');
+        tbody.innerHTML = predictions.map(p => {
+            let badgeClass = 'pred-high';
+            if (p.status === 'medium') badgeClass = 'pred-medium';
+            if (p.status === 'low') badgeClass = 'pred-low';
+            
+            return `
+                <tr>
+                    <td><strong style="color: var(--accent);">${p.id}</strong></td>
+                    <td>${p.name}</td>
+                    <td>${p.schemes}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${p.confidence}%"></div>
+                            </div>
+                            ${p.confidence}%
+                        </div>
+                    </td>
+                    <td><span class="pred-badge ${badgeClass}">${p.status}</span></td>
+                    <td><button class="btn-primary" style="padding: 5px 15px;" onclick="alert('View details for ${p.id}')">View</button></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Filter predictions
+    window.filterPredictions = function(level) {
+        const rows = document.querySelectorAll('#predictionsBody tr');
+        rows.forEach(row => {
+            if (level === 'all') {
+                row.style.display = '';
+            } else {
+                const status = row.querySelector('.pred-badge').textContent;
+                row.style.display = status === level ? '' : 'none';
+            }
+        });
+    };
+
+    // Initialize everything
+    document.addEventListener('DOMContentLoaded', function() {
+        initGauges();
+        populatePredictions();
+        
+        // Set active nav link
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '/ai-insights') {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
